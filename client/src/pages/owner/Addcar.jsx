@@ -1,8 +1,9 @@
-import React from 'react'
+import React, { useState } from 'react'
 
 const Addcar = () => {
+  const [image, setImage] = useState(null)
   return (
-    <div>Addcar</div>
+    <div></div>
   )
 }
 
