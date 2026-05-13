@@ -3,20 +3,14 @@ import { assets, dummyDashboardData } from '../../assets/assets'
 import Title from '../../components/owner/Title'
 const Dashboard = () => {
   const currency = import.meta.env.VITE_CURRENCY
-  const [data, setData] = useState({
-    tottalCars:0,
-    totalBbookings:0,
-    pendingBookings:0,
-     completedBookings:0,
-     recentBookings:[],
-     montlyRevenue:0,
-  })
+  const [data, setData] = useState(dummyDashboardData)
   const dashboardCards =[
     {title:'Total Cars', value:data.totalCars,icon: assets.carIconColored},
     {title:'Total Bookings', value:data.totalBookings,icon: assets.listIconColored},
     {title:'Pending Bookings', value:data.pendingBookings,icon: assets.cautionIconColored},
     {title:'Completed Bookings', value:data.completedBookings,icon: assets.listIconColored},
   ]
+
   useEffect(() => {
     setData(dummyDashboardData)
   },[])
