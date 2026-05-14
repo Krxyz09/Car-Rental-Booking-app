@@ -6,10 +6,17 @@ const Sidebar = () => {
   const user = dummyCarData;
   const location = useLocation();
   const [image, setImage] = useState("");
+  const [isEditingName, setIsEditingName] = useState(false);
+  const [tempName, setTempName] = useState(user.name || "");
 
   const updateImage = async () => {
     user.image = URL.createObjectURL(image);
     setImage("");
+  };
+
+  const saveName = () => {
+    user.name = tempName;
+    setIsEditingName(false);
   };
   return (
     <div className="relative min-h-screen md:flex flex-col items-center pt-8 max-w-13 md:max-w-60 w-full border-r border-borderColor text-sm">
@@ -39,7 +46,21 @@ const Sidebar = () => {
       {image && (
         <button onClick={updateImage} className="absolute top-0 right-0 flex p-2 gap-1 bg-primary/10 text-primary cursor-pointer">Save <img src={assets.check_icon} width={13} alt="" /></button>
       )}
-      <p className="mt-2 text-base max-md:hidden">{user.name || "Your Name"}</p>
+      {isEditingName ? (
+        <input
+          type="text"
+          value={tempName}
+          onChange={(e) => setTempName(e.target.value)}
+          onBlur={saveName}
+          onKeyDown={(e) => e.key === 'Enter' && saveName()}
+          className="mt-2 text-base max-md:hidden border border-gray-300 rounded px-2 py-1"
+          autoFocus
+        />
+      ) : (
+        <p onClick={() => setIsEditingName(true)} className="mt-2 text-base max-md:hidden cursor-pointer">
+          {user.name || "Your Name"}
+        </p>
+      )}
       <div className="w-full">
          {ownerMenuLinks.map((link,index)=>(
             <NavLink key={index} to={link.path} className={`relative flex items-center gap-2 w-full py-3 pl-4 first:mt-16 ${link.path === location.pathname ? 'bg-primary/10 text-primary' : 'text-gray-600'}`}>
