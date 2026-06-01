@@ -1,29 +1,38 @@
 import jwt from 'jsonwebtoken';
-import User from '../models/users.js';
+import users from '../models/users.js';
 
 export const protect = async (req, res, next) => {
     try {
-        const authHeader = req.headers.authorization;
+        const authHeader = req.headers.authorization || req.headers.Authorization;
 
-        if (!authHeader || !authHeader.startsWith('Bearer')) {
-            return res.json({ success: false, message: "Not authorized" });
+        if (!authHeader) {
+            return res.json({ success: false, message: 'not authorized' });
         }
 
-        const token = authHeader.split(' ')[1];
-        
-        // Verify returns the object: { id: "..." }
-        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        // Accept both 'Bearer <token>' and raw token values
+        const token = authHeader.startsWith('Bearer ') ? authHeader.split(' ')[1] : authHeader;
 
-        // Find user by the id property in the decoded object
-        const user = await User.findById(decoded.id).select("-password");
+        if (!token) {
+            return res.json({ success: false, message: 'not authorized' });
+        }
 
+        // Verify the token and extract payload
+        const payload = jwt.verify(token, process.env.JWT_SECRET);
+
+        if (!payload || !payload.id) {
+            return res.json({ success: false, message: 'not authorized' });
+        }
+
+        // Attach user to request (exclude password)
+        const user = await users.findById(payload.id).select('-password');
         if (!user) {
-            return res.json({ success: false, message: "User not found" });
+            return res.json({ success: false, message: 'not authorized' });
         }
 
-        req.user = user; // Attach user to the request
+        req.user = user;
         next();
     } catch (error) {
-        return res.json({ success: false, message: "Invalid or expired token" });
+        console.error('Auth middleware error:', error.message);
+        return res.json({ success: false, message: 'not authorized' });
     }
-}
+};

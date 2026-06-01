@@ -1,4 +1,4 @@
-import User from '../models/users.js'
+import users from '../models/users.js'
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 const generateToken = (userId) => {
@@ -11,12 +11,12 @@ export const registerUser = async (req, res) => {
         if(!name || !email || !password || password.length < 8){
             return res.json({success:false,message:"All fields are required"});
         }
-        const userExists = await User.findOne({email})
+        const userExists = await users.findOne({email})
         if(userExists){
             return res.json({success:false,message:"User already exists"});
         }
         const hashedPassword = await bcrypt.hash(password,10);
-        const user = await User.create({
+        const user = await users.create({
             name,
             email,
             password: hashedPassword
@@ -24,7 +24,7 @@ export const registerUser = async (req, res) => {
         const token = generateToken(user._id.toString());
         res.json({success:true,token});
     } catch(error){
-        // console.log(error.message);
+        console.log(error.message); 
         res.json({success:false,message:error.message});
     }
 }
@@ -32,9 +32,9 @@ export const registerUser = async (req, res) => {
 export const loginUser = async (req, res) => {
     try{
         const {email, password} = req.body;
-        const user = await User.findOne({email});
+        const user = await users.findOne({email});
         if(!user){
-            return res.json({success:false,message:"Invalid credentials"});
+            return res.json({success:false,message:"Sign up to continue"});
         }
         const isMatch = await bcrypt.compare(password, user.password);
         if(!isMatch){
@@ -53,7 +53,7 @@ export const getUserData = async (req, res) => {
         const {user} = req;
         res.json({success:true,user});
     } catch(error){
-        // console.log(error.message);
+        console.log(error.message);
         res.json({success:false,message:error.message});
     }
 }

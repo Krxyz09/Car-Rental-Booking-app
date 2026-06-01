@@ -8,6 +8,6 @@ const userSchema = new mongoose.Schema({
     image: {type: String,default: ''},
 },{timestamps: true})
 
-const User = mongoose.model('User', userSchema);
+const users = mongoose.model('users', userSchema);
 
-export default User;
+export default users;
