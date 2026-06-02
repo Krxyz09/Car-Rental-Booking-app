@@ -1,9 +1,33 @@
-import React, { useState } from "react";
-import { assets, dummyCarData } from "../assets/assets";
+import React, { useEffect, useState } from "react";
+import { assets } from "../assets/assets";
 import Title from "../components/Title";
 import CarCard from "../components/CarCard";
+import { useSearchParams } from "react-router-dom";
+import { useAppContext } from "../context/Appcontext";
 
 const Cars = () => {
+  const [searchParams] = useSearchParams();
+  const pickuplocation = searchParams.get('pickuplocation')
+  const pickupDate = searchParams.get('pickupDate')
+  const returnDate = searchParams.get('returnDate')
+
+  const {cars,axios} = useAppContext()
+  const isSearchData = pickuplocation && pickupDate && returnDate
+  const [filteredcars,setfilteredcars] = useState([])
+
+  const searchcaravailabilty = async ()=>{
+    const {data} = await axios.post('/api/bookings/check-availability',{location:pickuplocation,pickupDate,returnDate})
+    if(data.success){
+      setfilteredcars(data.availableCars)
+      if(data.availableCars.length === 0){
+        toast('No cars available')
+      }
+      return null
+    }
+  }
+  useEffect(()=>{
+    isSearchData && searchcaravailabilty()
+  },[])
   const [input, setInput] = useState("");
   return (
     <div>
@@ -28,10 +52,10 @@ const Cars = () => {
         </div>
       </div>
       <div className="px-6 md:px-16 lg:px-24 xl:px-32 mt-10">
-        <p className="text-gray-500 xl:px-20 max-w-7xl mx-auto">Showing {dummyCarData.length} Cars</p>
+        <p className="text-gray-500 xl:px-20 max-w-7xl mx-auto">Showing {filteredcars.length} Cars</p>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 mt-4 xl:px-20 max-w-7xl mx-auto">
-          {dummyCarData.map((car, index) => (
+          {filteredcars.map((car, index) => (
             <div key={index}>
               <CarCard car={car} />
             </div>

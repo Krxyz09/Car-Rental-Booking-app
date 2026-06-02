@@ -72,7 +72,7 @@ export const toggleCarAvailability = async (req, res) => {
         const { _id } = req.user;
         const { carId } = req.body;
         const car = await Car.findById(carId);
-        if(!car.owner.toString() !== _id.toString()){
+        if(car.owner.toString() !== _id.toString()){
             return res.json({ success: false, message: "Unauthorized" });
         }
         car.isAvailable = !car.isAvailable;
@@ -91,7 +91,7 @@ export const deleteCar = async (req, res) => {
         const { _id } = req.user;
         const { carId } = req.body;
         const car = await Car.findById(carId);
-        if(!car.owner.toString() !== _id.toString()){
+        if(car.owner.toString() !== _id.toString()){
             return res.json({ success: false, message: "Unauthorized" });
         }
         car.owner = null; // Remove owner reference

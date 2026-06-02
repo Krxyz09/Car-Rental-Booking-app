@@ -1,17 +1,30 @@
 import React, { useState } from "react";
-import { assets, dummyCarData, ownerMenuLinks } from "../../assets/assets";
+import { assets, ownerMenuLinks } from "../../assets/assets";
 import { NavLink, useLocation } from "react-router-dom";
-
+import { useAppContext } from "../../context/Appcontext.jsx";
+import { toast } from "react-hot-toast";
 const Sidebar = () => {
-  const user = dummyCarData;
+  const { user, axios, fetchUser } = useAppContext();
   const location = useLocation();
   const [image, setImage] = useState("");
   const [isEditingName, setIsEditingName] = useState(false);
-  const [tempName, setTempName] = useState(user.name || "");
+  const [tempName, setTempName] = useState(user?.name || "");
 
   const updateImage = async () => {
-    user.image = URL.createObjectURL(image);
-    setImage("");
+    try {
+      const formData = new FormData();
+      formData.append("image", image);
+      const { data } = await axios.post("/api/owners/update-image", formData);
+      if (data.success) {
+        toast.success("Profile picture updated successfully");
+        fetchUser();
+        setImage("");
+      }else{
+        toast.error(data.message);
+      }
+    } catch (err) {
+      toast.error(err.message);
+    }
   };
 
   const saveName = () => {
@@ -24,12 +37,10 @@ const Sidebar = () => {
         <label htmlFor="image">
           <img
             src={
-              image
-                ? URL.createObjectURL(image)
-                : user?.image ||
-                  assets.avatar
+              image ? URL.createObjectURL(image) : user?.image || assets.avatar
             }
-            alt="" className="w-35 h-35 rounded-full object-cover"
+            alt=""
+            className="w-35 h-35 rounded-full object-cover"
           />
           <input
             type="file"
@@ -44,7 +55,12 @@ const Sidebar = () => {
         </label>
       </div>
       {image && (
-        <button onClick={updateImage} className="absolute top-0 right-0 flex p-2 gap-1 bg-primary/10 text-primary cursor-pointer">Save <img src={assets.check_icon} width={13} alt="" /></button>
+        <button
+          onClick={updateImage}
+          className="absolute top-0 right-0 flex p-2 gap-1 bg-primary/10 text-primary cursor-pointer"
+        >
+          Save <img src={assets.check_icon} width={13} alt="" />
+        </button>
       )}
       {isEditingName ? (
         <input
@@ -52,23 +68,37 @@ const Sidebar = () => {
           value={tempName}
           onChange={(e) => setTempName(e.target.value)}
           onBlur={saveName}
-          onKeyDown={(e) => e.key === 'Enter' && saveName()}
+          onKeyDown={(e) => e.key === "Enter" && saveName()}
           className="mt-2 text-base max-md:hidden border border-gray-300 rounded px-2 py-1"
           autoFocus
         />
       ) : (
-        <p onClick={() => setIsEditingName(true)} className="mt-2 text-base max-md:hidden cursor-pointer">
-          {user.name || "Your Name"}
+        <p
+          onClick={() => setIsEditingName(true)}
+          className="mt-2 text-base max-md:hidden cursor-pointer"
+        >
+          {user?.name || "Your Name"}
         </p>
       )}
       <div className="w-full">
-         {ownerMenuLinks.map((link,index)=>(
-            <NavLink key={index} to={link.path} className={`relative flex items-center gap-2 w-full py-3 pl-4 first:mt-16 ${link.path === location.pathname ? 'bg-primary/10 text-primary' : 'text-gray-600'}`}>
-                <img src={link.path === location.pathname ? link.coloredIcon : link.icon} alt="car icon" />
-                <span className="max-md:hidden">{link.name}</span>
-                <div className={`${link.path === location.pathname ? 'bg-primary' : 'bg-gray-300'} w-1.5 h-8 rounded-l right-0 absolute`}></div>
-            </NavLink>
-         ))}
+        {ownerMenuLinks.map((link, index) => (
+          <NavLink
+            key={index}
+            to={link.path}
+            className={`relative flex items-center gap-2 w-full py-3 pl-4 first:mt-16 ${link.path === location.pathname ? "bg-primary/10 text-primary" : "text-gray-600"}`}
+          >
+            <img
+              src={
+                link.path === location.pathname ? link.coloredIcon : link.icon
+              }
+              alt="car icon"
+            />
+            <span className="max-md:hidden">{link.name}</span>
+            <div
+              className={`${link.path === location.pathname ? "bg-primary" : "bg-gray-300"} w-1.5 h-8 rounded-l right-0 absolute`}
+            ></div>
+          </NavLink>
+        ))}
       </div>
     </div>
   );
