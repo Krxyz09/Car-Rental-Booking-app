@@ -1,4 +1,5 @@
 import React from "react";
+import { Link } from "react-router-dom";
 import { assets } from '../assets/assets';
 const Banner = () => {
   return (
@@ -14,7 +15,7 @@ const Banner = () => {
           We take care of insurance, driver verification and secure payments —
           so you can earn passive income, stress-free.
         </p>
-        <button className="px-6 py-2 bg-white hover:bg-slate-100 transition-all text-primary rounded-lg text-sm mt-4 cursor-pointer">List your car</button>
+        <Link to="/owner/add-car" className="inline-block px-6 py-2 bg-white hover:bg-slate-100 transition-all text-primary rounded-lg text-sm mt-4">List your car</Link>
       </div>
 
       <img src={assets.banner_car_image} alt="car" className="max-h-45 mt-10" />

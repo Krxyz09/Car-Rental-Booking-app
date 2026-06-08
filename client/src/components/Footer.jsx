@@ -1,4 +1,5 @@
 import React from "react";
+import { Link } from "react-router-dom";
 import { assets } from "../assets/assets";
 
 const Footer = () => {
@@ -47,16 +48,16 @@ const Footer = () => {
           <h2 className="text-base font-medium text-gray-800 uppercase">Quick Links</h2>
           <ul className="mt-3 flex flex-col gap-1.5">
             <li>
-              <a href="#">Home</a>
+              <Link to="/">Home</Link>
             </li>
             <li>
-              <a href="#">Browse Cars</a>
+              <Link to="/cars">Browse Cars</Link>
             </li>
             <li>
-              <a href="#">List Your Cars</a>
+              <Link to="/owner/add-car">List Your Cars</Link>
             </li>
             <li>
-              <a href="#">About Us</a>
+              <Link to="/about">About Us</Link>
             </li>
           </ul>
         </div>
@@ -65,16 +66,16 @@ const Footer = () => {
           <h2 className="text-base font-medium text-gray-800 uppercase">Resources</h2>
           <ul className="mt-3 flex flex-col gap-1.5">
             <li>
-              <a href="#">Help Centre</a>
+              <Link to="/help-center">Help Centre</Link>
             </li>
             <li>
-              <a href="#">Terms of service</a>
+              <Link to="/terms">Terms of service</Link>
             </li>
             <li>
-              <a href="#">Privacy Policy</a>
+              <Link to="/privacy">Privacy Policy</Link>
             </li>
             <li>
-              <a href="#">Insurance</a>
+              <Link to="/insurance">Insurance</Link>
             </li>
           </ul>
         </div>

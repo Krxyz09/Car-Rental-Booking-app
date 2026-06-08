@@ -87,6 +87,7 @@ const Managebookings = () => {
                       <option value="pending">Pending</option>
                       <option value="confirmed">Confirmed</option>
                       <option value="cancelled">Cancelled</option>
+                      {/* <option value="cancelled">Completed</option> */}
                     </select>
                   ) : (
                     <span className={`px-3 py-1 rounded-full text-xs ${

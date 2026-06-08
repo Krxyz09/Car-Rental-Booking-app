@@ -3,17 +3,31 @@ import { assets } from "../assets/assets";
 import Title from "../components/Title";
 import CarCard from "../components/CarCard";
 import { useSearchParams } from "react-router-dom";
-import { useAppContext } from "../context/Appcontext";
-
+import { useAppContext } from "../context/Appcontext.jsx";
+import {toast} from 'react-hot-toast'
 const Cars = () => {
   const [searchParams] = useSearchParams();
   const pickuplocation = searchParams.get('pickuplocation')
   const pickupDate = searchParams.get('pickupDate')
   const returnDate = searchParams.get('returnDate')
 
-  const {cars,axios} = useAppContext()
+  const {cars,axios,token} = useAppContext()
   const isSearchData = pickuplocation && pickupDate && returnDate
   const [filteredcars,setfilteredcars] = useState([])
+  const [input, setInput] = useState("");
+  const applyFilter = async ()=>{
+    if(input === ''){
+      setfilteredcars(cars)
+      return null
+    }
+    const filtered = cars.slice().filter((car)=>{
+      return car.brand.toLowerCase().includes(input.toLowerCase())
+      || car.model.toLowerCase().includes(input.toLowerCase())
+      || car.category.toLowerCase().includes(input.toLowerCase())
+      || car.transmission.toLowerCase().includes(input.toLowerCase())
+    })
+    setfilteredcars(filtered)
+  }
 
   const searchcaravailabilty = async ()=>{
     const {data} = await axios.post('/api/bookings/check-availability',{location:pickuplocation,pickupDate,returnDate})
@@ -26,9 +40,13 @@ const Cars = () => {
     }
   }
   useEffect(()=>{
-    isSearchData && searchcaravailabilty()
-  },[])
-  const [input, setInput] = useState("");
+    if(isSearchData && token) {
+      searchcaravailabilty()
+    }
+  },[isSearchData,token])
+  useEffect(()=>{
+    cars.length >0 && !isSearchData && applyFilter()
+  },[input,cars])
   return (
     <div>
       <div className="flex flex-col items-center py-20 bg-light max-md:px-4">

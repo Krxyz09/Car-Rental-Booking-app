@@ -1,6 +1,20 @@
-import React from "react";
+import React, { useState } from "react";
+import { toast } from "react-hot-toast";
 
 const Newsletter = () => {
+  const [email, setEmail] = useState("");
+
+  const handleSubscribe = (event) => {
+    event.preventDefault();
+    if (!email.trim()) {
+      toast.error("Please enter your email address.");
+      return;
+    }
+
+    toast.success("Successfully subscribed");
+    setEmail("");
+  };
+
   return (
     <div className="flex flex-col items-center justify-center text-center space-y-2 max-md:px-4 my-10 mb-40 ">
       <h1 className="md:text-4xl text-2xl font-semibold">Never Miss a Deal!</h1>
@@ -8,10 +22,15 @@ const Newsletter = () => {
         Subscribe to get the latest offers, new arrivals, and exclusive
         discounts
       </p>
-      <form className="flex items-center justify-between max-w-2xl w-full md:h-13 h-12">
+      <form
+        onSubmit={handleSubscribe}
+        className="flex items-center justify-between max-w-2xl w-full md:h-13 h-12"
+      >
         <input
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
           className="border border-gray-300 rounded-md h-full border-r-0 outline-none w-full rounded-r-none px-3 text-gray-500"
-          type="text"
+          type="email"
           placeholder="Enter your email id"
           required
         />
